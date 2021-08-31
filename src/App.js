@@ -1,7 +1,7 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
 import TaskAdd from './TaskAdd';
-import TaskDisplay from './TeskDisplay';
+import List from './List';
 import { db } from './firebase';
 import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 import {
@@ -195,7 +195,7 @@ const App = (props) => {
               onClickHandler={onClickHandler}
             />
 
-            <TaskDisplay
+            <List
               items={items}
               deleteHandler={deleteHandler}
             />

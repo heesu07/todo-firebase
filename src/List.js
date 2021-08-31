@@ -1,7 +1,7 @@
 import React from 'react';
 
-const TaskDisplay = (props) => {
-  console.log(`TaskDisplay ${props.items}`);
+const List = (props) => {
+  console.log(`List ${props.items}`);
   return(
     <div className="todoContainer">      
       {
@@ -18,4 +18,4 @@ const TaskDisplay = (props) => {
     
   )
 }
-export default TaskDisplay;
+export default List;
