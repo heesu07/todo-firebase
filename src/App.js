@@ -89,6 +89,8 @@ const App = (props) => {
   const handleLogout = () => {
     const auth = getAuth();
     signOut(auth);
+    setUser("");
+    setItems([]);
   }
 
   const authLiistener = () => {
