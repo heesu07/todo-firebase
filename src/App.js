@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import TaskAdd from './TaskAdd';
 import List from './List';
 import { db } from './firebase';
-import { collection, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, addDoc, deleteDoc, doc, setDoc } from "firebase/firestore";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -42,6 +42,8 @@ const App = (props) => {
     signInWithEmailAndPassword(auth, email, password)
       .then(userCredential => {
         setUser(userCredential.user);
+        setDoc(db, userCredential.user.email);
+        console.log(userCredential.user.email);
       })
       .catch(err => {
         switch (err.code) {
@@ -66,6 +68,8 @@ const App = (props) => {
     createUserWithEmailAndPassword(auth, email, password)
       .then(userCredential => {
         setUser(userCredential.user);
+        setDoc(db, userCredential.user.email);
+        console.log(userCredential.user.email);
       })
       .catch(err => {
         switch (err.code) {
@@ -104,10 +108,14 @@ const App = (props) => {
   }, []);
 
   const getAllData = async () => {
-    if (user === "") return;
+    console.log(user.email);
+    if (user === "") {
+      return;
+    }
     const items = [];
-    await getDocs(collection(db, "tasks"))
+    await getDocs(collection(db, user.email))
       .then(docs => {
+        console.log(docs);
         docs.forEach(doc => {
           items.push({ id: doc.id, todo: doc.data().todo });
         });
@@ -119,12 +127,12 @@ const App = (props) => {
   }
 
   const deleteData = async (id) => {
-    await deleteDoc(doc(db, "tasks", id));
+    await deleteDoc(doc(db, user.email, id));
   }
 
   const addData = async (todo) => {
     try {
-      const docRef = await addDoc(collection(db, "tasks"), { todo: todo })
+      const docRef = await addDoc(collection(db, user.email), { todo: todo })
         .then((docRef) => {
           const newItems = [...items, { id: docRef.id, todo: inputvalue }];
           setItems(newItems);
@@ -137,7 +145,7 @@ const App = (props) => {
   }
 
   const getData = async () => {
-    await getDocs(collection(db, "tasks"))
+    await getDocs(collection(db, user.email))
       .then(docs => {
         console.log(`getData success`);
       })
@@ -186,8 +194,11 @@ const App = (props) => {
         <div>
           <section className="hero">
             <nav>
-              <h2>Welcome</h2>
-              <button onClick={handleLogout}>Logout</button>
+              <h2> Welcome </h2>
+              <div>
+                <h4> {user.email} </h4>
+                <button onClick={handleLogout}>Logout</button>
+              </div>
             </nav>
             <TaskAdd
               inputvalue={inputvalue}
