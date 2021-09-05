@@ -1,18 +1,91 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import firebase from './firebase';
 
 const Login = (props) => {
-  const {
-    email,
-    setEmail,
-    password,
-    setPassword,
-    handleLogin,
-    handleSignup,
-    hasAccount,
-    setHasAccount,
-    emailError,
-    passwordError
-  } = props;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [hasAccount, setHasAccount] = useState(false);
+
+  const { user, setUser } = props;
+
+  
+  const handleLogin = () => {
+    clearErrors();
+    console.log("try login");
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        setUser(userCredential.user);
+        console.log(`Login :${userCredential.user.email}`);
+      })
+      .catch(err => {
+        switch (err.code) {
+          case "auth/invalid-email":
+          case "auth/user-disabled":
+          case "auth/user-not-found":
+            setEmailError(err.message);
+            break;
+          case "auth/wrong-password":
+            setPasswordError(err.message);
+            break;
+          default:
+            break;
+        }
+      });
+  };
+
+  const handleSignup = () => {
+    clearErrors();
+    console.log("try sign up");
+    firebase
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(userCredential => {
+        setUser(userCredential.user);
+        console.log(console.log(`Login :${userCredential.user.email}`));
+      })
+      .catch(err => {
+        switch (err.code) {
+          case "auth/email-alread-in-use":
+          case "auth/invalid-email":
+            setEmailError(err.message);
+            break;
+          case "auth/weak-password":
+            setPasswordError(err.message);
+            break;
+          default:
+            break;
+        }
+      });
+  };
+
+  const authListener = () => {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {        
+        setUser(user);
+        console.log('authListener');
+      } else {
+        setUser("");
+      }
+    });
+  };
+
+  useEffect(() => {
+    authListener();
+  }, [user]);
+
+  const clearInputs = () => {
+    setEmail('');
+    setPassword('');
+  };
+  
+  const clearErrors = () => {
+    setEmailError('');
+    setPasswordError('');
+  };
 
   return (
     <section className='login'>
