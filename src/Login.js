@@ -75,13 +75,14 @@ const Login = (props) => {
 
   useEffect(() => {
     authListener();
+    console.log(user);
   }, [user]);
 
   const clearInputs = () => {
     setEmail('');
     setPassword('');
   };
-  
+
   const clearErrors = () => {
     setEmailError('');
     setPasswordError('');

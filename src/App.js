@@ -67,7 +67,7 @@ const App = () => {
 
   useEffect(() => {
     getTodos();
-  }, []);
+  }, [user]);
 
   const handleLogout = () => {
     firebase.auth().signOut();
